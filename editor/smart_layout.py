@@ -16,8 +16,19 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal, QThread
 from PyQt6.QtGui import QFont, QColor, QTextCharFormat, QTextBlockFormat, QTextDocument
 
-from xbrain.core.chat import run
-from xbrain.utils.config import Config
+try:
+    from xbrain.core.chat import run
+    from xbrain.utils.config import Config
+except ImportError:
+    # 备用导入，用于打包版本
+    def run(messages, model="gpt-3.5-turbo"):
+        return "AI功能需要配置API密钥才能使用。请在设置中配置您的API密钥。"
+    
+    class Config:
+        def __init__(self):
+            self.OPENAI_API_KEY = ""
+            self.OPENAI_BASE_URL = "https://api.openai.com/v1"
+            self.MODEL_NAME = "gpt-3.5-turbo"
 
 @dataclass
 class LayoutStyle:
