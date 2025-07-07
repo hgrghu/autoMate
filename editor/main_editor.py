@@ -21,6 +21,9 @@ from .toolbar import EditorToolbar
 from .export_manager import ExportManager
 from .outline_view import OutlineView
 from .version_manager import VersionManager
+from .document_generator import DocumentGeneratorDialog
+from .smart_layout import SmartLayoutDialog
+from .template_manager import TemplateDialog
 
 class AIRichTextEditor(QMainWindow):
     """AI增强富文本编辑器主窗口"""
@@ -206,6 +209,20 @@ class AIRichTextEditor(QMainWindow):
         
         style_check_action = ai_menu.addAction('风格统一检查')
         style_check_action.triggered.connect(self.check_style_consistency)
+        
+        ai_menu.addSeparator()
+        
+        # 智能文档生成
+        doc_gen_action = ai_menu.addAction('智能文档生成器')
+        doc_gen_action.triggered.connect(self.open_document_generator)
+        
+        # 智能排版设计
+        smart_layout_action = ai_menu.addAction('智能排版设计')
+        smart_layout_action.triggered.connect(self.open_smart_layout)
+        
+        # 文档模板库
+        template_action = ai_menu.addAction('文档模板库')
+        template_action.triggered.connect(self.open_template_library)
         
         # 视图菜单
         view_menu = menubar.addMenu('视图(&V)')
@@ -448,6 +465,66 @@ class AIRichTextEditor(QMainWindow):
             self.llm_assistant.check_style(full_text)
         else:
             QMessageBox.information(self, "提示", "文档为空，无法检查风格")
+            
+    def open_document_generator(self):
+        """打开AI文档生成器"""
+        dialog = DocumentGeneratorDialog(self)
+        dialog.document_generated.connect(self.on_document_generated)
+        dialog.exec()
+        
+    def on_document_generated(self, document_content):
+        """文档生成完成后的处理"""
+        # 检查是否需要保存当前文档
+        if self.check_save_changes():
+            self.text_editor.setPlainText(document_content)
+            self.current_file = None
+            self.is_modified = True
+            self.update_window_title()
+            self.status_bar.showMessage("AI文档生成完成")
+            
+    def open_smart_layout(self):
+        """打开智能排版设计器"""
+        current_text = self.text_editor.toPlainText()
+        if not current_text.strip():
+            QMessageBox.information(self, "提示", "请先输入一些文本内容再使用智能排版功能")
+            return
+            
+        dialog = SmartLayoutDialog(current_text, self)
+        dialog.layout_applied.connect(self.on_layout_applied)
+        dialog.exec()
+        
+    def on_layout_applied(self, formatted_text, style_info):
+        """智能排版应用完成后的处理"""
+        # 应用格式化文本
+        self.text_editor.setPlainText(formatted_text)
+        
+        # 应用样式设置
+        layout_options = style_info.get('layout_options', {})
+        
+        # 设置字体
+        if 'font_family' in layout_options and 'font_size' in layout_options:
+            font = QFont(layout_options['font_family'], layout_options['font_size'])
+            self.text_editor.setFont(font)
+            
+                 self.is_modified = True
+         self.update_window_title()
+         self.status_bar.showMessage("智能排版已应用")
+         
+    def open_template_library(self):
+        """打开文档模板库"""
+        dialog = TemplateDialog(self)
+        dialog.template_selected.connect(self.on_template_selected)
+        dialog.exec()
+        
+    def on_template_selected(self, template_content):
+        """模板选择完成后的处理"""
+        # 检查是否需要保存当前文档
+        if self.check_save_changes():
+            self.text_editor.setPlainText(template_content)
+            self.current_file = None
+            self.is_modified = True
+            self.update_window_title()
+            self.status_bar.showMessage("模板已应用")
             
     # 视图控制
     def toggle_outline_view(self):
