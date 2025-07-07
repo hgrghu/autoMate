@@ -1,0 +1,43 @@
+# AI增强富文本编辑器依赖包
+# 基于 autoMate 项目的扩展模块
+
+# 核心依赖（继承自主项目）
+PyQt6>=6.5.0
+supervision==0.18.0
+ultralytics==8.3.70
+numpy==1.26.4
+pyautogui==0.9.54
+anthropic[bedrock,vertex]>=0.37.1
+pyxbrain==1.1.31
+timm
+einops==0.8.0
+modelscope
+pynput
+lap
+keyboard==0.13.5
+
+# 编辑器特有依赖
+# 文档处理
+html2text>=2020.1.16
+markdown>=3.4.4
+python-docx>=0.8.11
+
+# PDF 处理
+weasyprint>=60.0
+
+# 图像处理（用于图表生成）
+matplotlib>=3.7.0
+Pillow>=10.0.0
+
+# 数据库（版本管理）
+# sqlite3 是Python内置模块，无需额外安装
+
+# 可选依赖（高级功能）
+# chartify>=3.0.0  # 图表生成
+# jinja2>=3.1.0    # 模板渲染
+# beautifulsoup4>=4.12.0  # HTML解析
+
+# 开发依赖（可选）
+# pytest>=7.0.0
+# black>=23.0.0
+# mypy>=1.0.0
